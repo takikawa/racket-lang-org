@@ -29,32 +29,38 @@
    @columns[10 #:center? #t #:row? #t #:center-text? #t]{
     @h3[style: "text-align: center"]{Version @version (@(release-date-string release))}
     @div[id: "download_panel" align: "center" style: "display: none; margin-bottom: 20px;"]{
-      @div[align: "center"]{
-        Distribution:
-        @select[id: "package_selector"
-                onchange:   "selection_changed();"
-                onkeypress: "selection_changed();"]{
-          @(for/list ([i (in-list all-packages)])
-             (cdr i))}
-        @(for/list ([i (in-list all-packages)]
-                    [n (in-naturals)])
-           (define this-package (car i))
-           @div[id: (format "platform_selector_panel_~a" this-package)
-                style: (if (zero? n) "display: block;" "display: none;")]{
-              Platform:
-              @select[id: (format "platform_selector_~a" this-package)
-                      onchange:   "selection_changed();"
-                      onkeypress: "selection_changed();"]{
-                @(for/list ([i (in-list all-installers)]
-                            #:when (and (equal? release (installer-release i))
-                                        (equal? this-package (installer-package i))))
-                   (installer->page i 'render-direct-option))}})}
+      @form{
+        @fieldset{
+          @legend{Choose your distribution/platform}
+          @ul{
+            @li[class: "field"]{
+              @label[for: "package_selector"]{Distribution:}
+              @div[class: "picker"]{
+                @select[id: "package_selector"
+                        onchange:   "selection_changed();"
+                        onkeypress: "selection_changed();"]{
+                  @(for/list ([i (in-list all-packages)])
+                     (cdr i))}}}
+            @(for/list ([i (in-list all-packages)]
+                        [n (in-naturals)])
+               (define this-package (car i))
+               @li[class: "field"]{
+                 @div[id: (format "platform_selector_panel_~a" this-package)
+                      style: (if (zero? n) "display: block;" "display: none;")]{
+                    @label[for: (format "platform_selector_~a" this-package)]{Platform:}
+                    @div[class: "picker"]{
+                      @select[id: (format "platform_selector_~a" this-package)
+                              onchange:   "selection_changed();"
+                              onkeypress: "selection_changed();"]{
+                        @(for/list ([i (in-list all-installers)]
+                                    #:when (and (equal? release (installer-release i))
+                                                (equal? this-package (installer-package i))))
+                           (installer->page i 'render-direct-option))}}}})}}}
       @br
-      @navigation-button[@(a href: (resource "download/" #f)
-                             id: "download_link"
-                             "Download")]
-      @br
-      or @a[href: (resource "download/" #f) id: "mirror_link"]{mirror}}}
+      @div[class: "medium metro primary btn icon-left entypo icon-install"]{
+        @a[href: (resource "download/" #f) id: "download_link"]{Download}}
+      @div[class: "medium metro info btn icon-left entypo icon-globe"]{
+        @a[href: (resource "download/" #f) id: "mirror_link"]{use a mirror}}}}
   @columns[8 #:center? #t #:center-text? #t #:row? #t]{
       @(let* ([sep   @list{@nbsp @bull @nbsp}]
               [links (λ links @(div style: "margin: 1ex 4ex;" (add-between links sep)))]
